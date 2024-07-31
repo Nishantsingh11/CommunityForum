@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { uploadImage } from "../utils/cloudinairy.js";
 
 // function for the genrating access token and refresh token
 const genrateAccessAndRefreshToken = async userId => {
@@ -21,35 +22,40 @@ const genrateAccessAndRefreshToken = async userId => {
 };
 
 const createUser = asyncHandler(async (req, res) => {
-  try {
-    const { name, email, password, confirmPassword, username } = req.body;
-    if (!name || !email || !password || !confirmPassword || !username) {
-      throw new ApiError(400, "Please fill all the fields");
-    }
-    if (password !== confirmPassword) {
-      throw new ApiError(400, "Passwords do not match");
-    }
-    const ExistingEmailOrUsername = await User.findOne({
-      $or: [{ username }, { email }]
-    });
-    if (ExistingEmailOrUsername) {
-      throw new ApiError(400, "Email or Username is  already exists");
-    }
+  const { name, email, password, confirmPassword, username } = req.body;
+  console.log(req.body);
+  console.log("Request Files:", req.files);
 
-    const user = new User({ name, email, password,username});
-    await user.save();
-    const Isuser = await User.findOne({ email }).select(
-      "-password -refreshToken"
-    );
-    if (!Isuser) {
-      throw new ApiError(400, "Internal error");
-    }
-    res
-      .status(201)
-      .json(new ApiResponse(201, "User created successfully", Isuser));
-  } catch (error) {
-    throw new ApiError(400, error.message);
+  if (!name || !email || !password || !confirmPassword || !username) {
+    throw new ApiError(400, "Please fill all the fields");  
   }
+  if (password !== confirmPassword) {
+    throw new ApiError(400, "Passwords do not match");
+  }
+
+  // file upload
+  // const avatarLocalPath = req.files?.avatar[0].path;
+  // console.log(avatarLocalPath)
+
+  // const avatar = await uploadImage(avatarLocalPath);
+  const ExistingEmailOrUsername = await User.findOne({
+    $or: [{ username }, { email }]
+  });
+  if (ExistingEmailOrUsername) {
+    throw new ApiError(400, "Email or Username is  already exists");
+  }
+
+  const user = new User({ name, email, password, username });
+  await user.save();
+  const Isuser = await User.findOne({ email }).select(
+    "-password -refreshToken"
+  );
+  if (!Isuser) {
+    throw new ApiError(400, "Internal error");
+  }
+  res
+    .status(201)
+    .json(new ApiResponse(201, "User created successfully", Isuser));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
