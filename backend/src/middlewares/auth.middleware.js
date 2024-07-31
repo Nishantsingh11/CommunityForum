@@ -9,7 +9,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, "unauthorized");
     }
 
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    const decode = jwt.verify(token, process.env.ACCESSTOKEN);
     const user = await User.findById(decode._id).select(
       "-password -refreshToken"
     );
@@ -26,3 +26,5 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     );
   }
 });
+
+export { authMiddleware };

@@ -1,21 +1,5 @@
 import { Schema, model } from "mongoose";
-// comment schema
-const commentSchema = new Schema(
-  {
-    body: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User"
-    }
-  },
-  { timestamps: true }
-);
-export const Comment = model("Comment", commentSchema);
-// post schema 
+// post schema
 const postSchema = new Schema(
   {
     title: {
@@ -32,18 +16,10 @@ const postSchema = new Schema(
     img: {
       type: String
     },
-    likes: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-    comments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Comment"
-      }
-    ]
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    }
   },
   { timestamps: true }
 );
