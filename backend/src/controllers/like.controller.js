@@ -10,29 +10,35 @@ const handleLike = asyncHandler(async (req, res) => {
   try {
     const { postid } = req.params;
 
-    const like = await Like.find({ 
-      postid, 
+    const existingLike = await Like.find({
+      postid,
       userid: req.user._id
     });
-    console.log("like from db ", like);
-    if (like?.length) {
-      console.log("like", like);
+    // console.log("like from db ", existingLike);
+    if (existingLike.length) {
+      await Like.updateOne({ postid }, { $pull: { userid: req.user._id } });
       // remove the likeby and video from the like
-      if (like.length) {
-        await Like.deleteMany({ postid, userid: req.user._id });
-        return res.status(200).json(new ApiResponse(200, {}, "Like removed successfully"));
-      }
-      // errror like.remove is not a function
-
       return res
         .status(200)
         .json(new ApiResponse(200, {}, "Like removed successfully"));
     }
+    const IsPost = await Like.findOne({ postid });
+    if (IsPost) {
+      // add the user to the like
+      // push the new user in the like
+      // save the like
+      const newLike = await Like.findOneAndUpdate(
+        { postid },
+        { $push: { userid: req.user._id } },
+        { new: true }
+      );
+      return res.send(new ApiResponse(200, newLike, "Post liked"));
+    }
     const newLike = new Like({
       postid,
-      userid: req.user._id
+      userid: req.user
     });
-    console.log("new like",newLike);
+    // console.log("new like", newLike);
 
     await newLike.save();
     return res.send(new ApiResponse(200, {}, "Post liked"));
@@ -50,17 +56,43 @@ const handleCommentLike = asyncHandler(async (req, res) => {
   try {
     const { commentid } = req.params;
     const { userid } = req.user;
-    const like = await Like.findOne({ commentid, userid:req.user._id });
+    const like = await Like.findOne({ commentid, userid: req.user._id });
     if (like) {
       await like.deleteOne();
-      return res.status(200).json(new ApiResponse(200,{}, "Like removed successfully"))
+      return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Like removed successfully"));
     }
     const newLike = new Like({
       commentid,
-      userid:req.user._id
+      userid: req.user._id
     });
     await newLike.save();
-    res.status(201).json(new ApiResponse(201,newLike, "Like added successfully"))
+    res
+      .status(201)
+      .json(new ApiResponse(201, newLike, "Like added successfully"));
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(500, "Internal server error");
+  }
+});
+
+// get the commnetLike using the comment id
+const getCommentLike = asyncHandler(async (req, res) => {
+  try {
+    const { commentid } = req.params;
+    console.log("commedId", commentid);
+    const comment = await Like.find({ commentid: commentid });
+    if (!comment) {
+      return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "No liked comments found"));
+    }
+    res
+      .status(201)
+      .json(
+        new ApiResponse(201, comment, "Liked comments fetched successfully")
+      );
   } catch (error) {
     console.log(error);
     throw new ApiError(500, "Internal server error");
@@ -74,17 +106,55 @@ const getLikedPosts = asyncHandler(async (req, res) => {
   // return the post liked by the user
   try {
     const likedPosts = await Like.find({
-       userid:req.user._id
-       })
+      userid: req.user._id
+    });
     if (likedPosts.length) {
-      res.status(201).json(new ApiResponse(201,likedPosts, "Liked posts fetched successfully"))
-    }else{
-
-      res.status(200).json(new ApiResponse(200,{}, "No liked posts found"))
+      res
+        .status(201)
+        .json(
+          new ApiResponse(201, likedPosts, "Liked posts fetched successfully")
+        );
+    } else {
+      res.status(200).json(new ApiResponse(200, {}, "No liked posts found"));
     }
   } catch (error) {
     console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
-export { handleLike, handleCommentLike, getLikedPosts };
+// get most liked posts 
+
+const getLikeOnPost = asyncHandler(async (req, res) => {
+  // first find posts where the post id provided id
+  // we have to use aggregate to get the count of likes on the post and to get the user who liked the post
+  const { postid } = req.params;
+  const likes = await Like.find({ postid: postid });
+  // console.log("likes", likes);
+
+  if (likes.length) {
+    const IsLikedUser = likes[0].userid.some(id => {
+      return id.equals(req.user._id);
+    });
+
+    const UserLen = likes[0].userid.length;
+    const resp = {
+      likes,
+      UserLen,
+      IsLikedUser
+    };
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, resp, "Likes on post fetched successfully"));
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "No likes found on post"));
+});
+export {
+  handleLike,
+  handleCommentLike,
+  getLikedPosts,
+  getLikeOnPost,
+  getCommentLike
+};

@@ -23,8 +23,6 @@ const genrateAccessAndRefreshToken = async userId => {
 
 const createUser = asyncHandler(async (req, res) => {
   const { name, email, password, confirmPassword, username } = req.body;
-  console.log(req.body);
-  console.log("Request Files:", req.files);
 
   if (!name || !email || !password || !confirmPassword || !username) {
     throw new ApiError(400, "Please fill all the fields");  
@@ -34,10 +32,9 @@ const createUser = asyncHandler(async (req, res) => {
   }
 
   // file upload
-  // const avatarLocalPath = req.files?.avatar[0].path;
-  // console.log(avatarLocalPath)
+  const avatarLocalPath = req.files?.avatar[0].path;
 
-  // const avatar = await uploadImage(avatarLocalPath);
+  const avatar = await uploadImage(avatarLocalPath);
   const ExistingEmailOrUsername = await User.findOne({
     $or: [{ username }, { email }]
   });
@@ -45,7 +42,7 @@ const createUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email or Username is  already exists");
   }
 
-  const user = new User({ name, email, password, username });
+  const user = new User({ name, email, password, username, avatar });
   await user.save();
   const Isuser = await User.findOne({ email }).select(
     "-password -refreshToken"
@@ -68,13 +65,15 @@ const loginUser = asyncHandler(async (req, res) => {
 
   try {
     const { email, username, password } = req.body;
+    console.log(req.body);
     if (!(email || username)) {
       throw new ApiError(400, "Please provide email or username");
     }
     if (!password) {
       throw new ApiError(400, "Please provide password");
     }
-    const user = await User.findOne({ $or: [{ email }, { username }] });
+    const user = await User.findOne({ $or: [{ email:email }, { username:username }] });
+    console.log(user);
     if (!user) {
       throw new ApiError(400, "User not found");
     }
@@ -90,8 +89,8 @@ const loginUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
     const option = {
-      httpOnly: true,
-      secure: true
+      httpOnly: false,
+      // secure: false
     };
     res
       .status(200)
@@ -105,6 +104,7 @@ const loginUser = asyncHandler(async (req, res) => {
         })
       );
   } catch (error) {
+    console.log(error);
     throw new ApiError(400, error.message);
   }
 });

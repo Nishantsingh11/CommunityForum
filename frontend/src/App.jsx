@@ -1,24 +1,21 @@
-// import Homepage from "./Components/Homepage"
-// import Registion_Login from "./Components/Registion_Login"
-// import Qustions from "./Components/Qustions"
-// import User_Profile from "./Components/User_Profile"
+import Footer from './Components/Footer';
+import Header from './Components/Header';
+import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
-import AskQustion from "./Components/AskQustion"
-
-// import Qustion from "./Components/Qustion"
-
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   return (
-  <div className="bg-backgroundclr">
-  {/* <Homepage /> */}
-  {/* <Registion_Login  /> */}
-  {/* <User_Profile /> */}
-  {/* <Qustions /> */}  
-  {/* <Qustion /> */}
-  <AskQustion />  
-  </div>
-  )
-} 
+    <div className="bg-backgroundclr">
+      <ToastContainer />
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
-export default App
+export default App;

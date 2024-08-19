@@ -2,7 +2,7 @@ import { Comment } from "../models/comment.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import { User } from "../models/user.model.js";
 const addComment = asyncHandler(async (req, res) => {
   // get the body of commnet
   // get the post id
@@ -16,12 +16,14 @@ const addComment = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Comment body is required");
     }
     const { postid } = req.params;
-    const { userid } = req.user;
+
     const newComment = new Comment({
       body,
       postid,
-      userid
+      userid: req.user._id
     });
+    console.log("new comment", newComment);
+
     await newComment.save();
     return res.send(
       new ApiResponse(200, newComment, "Comment added successfully")
@@ -31,26 +33,39 @@ const addComment = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Internal server error");
   }
 });
-// get comments by post id
 const getComments = asyncHandler(async (req, res) => {
-  // get the post id
-  // get the comments by post id
-  // send the response
-  // if no comments found then send the response with empty array
-  // if comments found then send the response with comments
-  // if error then send the response with error
   try {
     const { id } = req.params;
     const comments = await Comment.find({ postid: id });
+
     if (!comments.length) {
       return res.send(new ApiResponse(200, [], "No comments found"));
     }
-    return res.send(new ApiResponse(200, comments, "Comments found"));
+
+    // Fetch user data for each comment and attach it to the comment object
+    const commentsWithUserData = await Promise.all(
+      comments.map(async comment => {
+        const user = await User.findById(comment.userid).select(
+          "-coverImage -createdAt -email -password -updatedAt"
+        );
+        return {
+          ...comment._doc, // Spread the comment data (using _doc to get the raw data)
+          user: user || {} // Attach the user data, or an empty object if user not found
+        };
+      })
+    );
+
+    return res.send(
+      new ApiResponse(200, commentsWithUserData, "Comments found")
+    );
   } catch (error) {
     console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
+
+
+
 // delete comment by comment id
 const deleteComment = asyncHandler(async (req, res) => {
   // get the comment id
@@ -63,9 +78,21 @@ const deleteComment = asyncHandler(async (req, res) => {
   try {
     const { commentid } = req.params;
     const { userid } = req.user;
+    console.log("userID", req.user._id);
+    const comment = await Comment.findById(commentid);
+    console.log("commment", comment);
+    if (!comment) {
+      throw new ApiError(404, "Comment not found");
+    }
+    if (comment.userid.toString() !== req.user._id.toString()) {
+      throw new ApiError(403, "You are not authorized to delete this comment");
+    }
     await Comment.findByIdAndDelete(commentid);
-    res.send(new ApiResponse(200, "commnet deleted successfully"));
+    return res.send(
+      new ApiResponse(200, comment, "Comment deleted successfully")
+    );
   } catch (error) {
+    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });

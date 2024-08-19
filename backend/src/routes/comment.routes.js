@@ -9,6 +9,6 @@ import {
 const router = Router();
 router.route("/addcomment/:postid").post(authMiddleware, addComment);
 router.route("/getcomment/:id").get(authMiddleware, getComments);
-router.route("/deletecomment/:id").delete(authMiddleware, deleteComment);
+router.route("/deletecomment/:commentid").delete(authMiddleware, deleteComment);
 
 export default router;

@@ -18,7 +18,7 @@ const uploadImage = async(localFilePath)=>{
         // remove the file from the local storage
         console.log("File uploaded successfully",res);
         fs.unlinkSync(localFilePath)
-        return res
+        return res.url
 
     }
     catch(error){

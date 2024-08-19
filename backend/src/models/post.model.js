@@ -16,9 +16,18 @@ const postSchema = new Schema(
     img: {
       type: String
     },
+    tags:[{
+      type: String,
+      trim: true
+    }],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User"
+    },
+    status: {
+      type: String,
+      enum: ["answered", "unanswered"],
+      default: "unanswered"
     }
   },
   { timestamps: true }

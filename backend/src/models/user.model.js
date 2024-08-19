@@ -32,8 +32,7 @@ const userSchema = new Schema(
     },
     avatar: {
       type: String,
-      default:
-        "https://img.freepik.com/free-psd/3d-rendering-avatar_23-2150833554.jpg?size=626&ext=jpg"
+      required: true
     },
     coverImage: {
       type: String,
@@ -46,16 +45,16 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 // check if the password is correct
-userSchema.methods.isPasswordMatch = async function(enteredPassword) {
+userSchema.methods.isPasswordMatch = async function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };
-userSchema.methods.genrateAccessToken = function() {
+userSchema.methods.genrateAccessToken = function () {
   return jwt.sign(
     {
       _id: this.id,
@@ -67,7 +66,7 @@ userSchema.methods.genrateAccessToken = function() {
     { expiresIn: process.env.ACCESS_TOKEN_EXPIREY }
   );
 };
-userSchema.methods.genrateRefreshToken = async function() {
+userSchema.methods.genrateRefreshToken = async function () {
   return jwt.sign(
     {
       _id: this.id

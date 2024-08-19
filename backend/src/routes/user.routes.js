@@ -18,6 +18,16 @@ router.route("/register").post(
       maxCount: 1
     }
   ]),
+  (err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+      console.error('Multer Error:', err);
+      return res.status(500).send(err.message);
+    } else if (err) {
+      console.error('Unknown Error:', err);
+      return res.status(500).send(err.message);
+    }
+    next();
+  },
   createUser
 );
 router.route("/login").post(loginUser);

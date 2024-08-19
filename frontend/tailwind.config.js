@@ -1,17 +1,36 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     colors: {
-      backgroundclr: "hsl(36 39% 88%)",
-      forgroundclr: "hsl(36 45% 15%)",
-      forButton: "hsl(37, 45%, 70%)",
-      fortextnormal: "hsl(34, 22%, 41%)",
-      forheading: "hsl(41, 28%, 21%)",
-      secondaryColor:"hsl(34, 33%, 75%)",
-      card:"hsl(34, 46%, 82%)"
+      backgroundclr: 'hsl(36 39% 88%)',
+      forgroundclr: 'hsl(36 45% 15%)',
+      forButton: 'hsl(37, 45%, 70%)',
+      fortextnormal: 'hsl(34, 22%, 41%)',
+      forheading: 'hsl(41, 28%, 21%)',
+      secondaryColor: 'hsl(34, 33%, 75%)',
+      background: 'hsl(36 39% 88%)',
+      foreground: 'hsl(36 45% 15%)',
+      primary: 'hsl(36 45% 70%)',
+      primaryForeground: 'hsl(36 45% 11%)',
+      secondary: 'hsl( 40 35% 77%)',
+      secondaryForeground: 'hsl(36 45% 25%)',
+      accent: 'hsl(36 64% 57%)',
+      accentForeground: 'hsl(36 72% 17%)',
+      destructive: 'hsl(0 84% 37%)',
+      destructiveForeground: 'hsl(0 0% 98%)',
+      muted: 'hsl(36 33% 75%)',
+      mutedForeground: 'hsl(36 45% 25%)',
+      card: 'hsl(36 46% 82%)',
+      cardForeground: 'hsl(36 45% 20%)',
+      popover: 'hsl(0 0% 100%)',
+      popoverForeground: 'hsl(240 10% 3.9%)',
+      border: 'hsl(36 45% 60%)',
+      input: 'hsl(36 45% 60%)',
+      ring: 'hsl(36 45% 30%)',
+      radius: 'hsl(0rem)',
     },
-    extend: {}
+    extend: {},
   },
-  plugins: []
+  plugins: [],
 };
