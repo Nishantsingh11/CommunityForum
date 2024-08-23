@@ -12,6 +12,9 @@ const commentSchema = new Schema(
     userid: {
       type: Schema.Types.ObjectId,
       ref: "User"
+    },
+    commentimg: {
+      type: String
     }
   },
   { timestamps: true }

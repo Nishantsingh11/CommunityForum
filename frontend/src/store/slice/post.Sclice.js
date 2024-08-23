@@ -10,13 +10,13 @@ const initialState = {
   isError: false,
   searchPosts: [],
   popularTag: [],
-  searchByTagPost: []
+  searchByTagPost: [],
+  popularQustions: []
 };
 export const GetPosts = createAsyncThunk('getPosts', async (thunkAPI) => {
   try {
     const response = await CommunityApi.get('/post/getposts');
-    console.log(response.data.data);
-    
+
     return response.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data);
@@ -25,7 +25,6 @@ export const GetPosts = createAsyncThunk('getPosts', async (thunkAPI) => {
 export const CreatePost = createAsyncThunk(
   'createPost',
   async (postData, thunkAPI) => {
-    console.log('postdata', postData);
     try {
       const formData = new FormData()
       formData.append('title', postData.title)
@@ -38,10 +37,8 @@ export const CreatePost = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response);
       return response.data;
     } catch (err) {
-      console.log(err);
       return thunkAPI.rejectWithValue(err.response.data);
     }
   }
@@ -78,7 +75,6 @@ export const UpdatePost = createAsyncThunk(
         updatedPost);
       return response.data;
     } catch (err) {
-      console.log(err);
 
       return thunkAPI.rejectWithValue(err.response.data);
     }
@@ -86,9 +82,9 @@ export const UpdatePost = createAsyncThunk(
 );
 export const DetelePost = createAsyncThunk(
   'deletePost',
-  async (postId, thunkAPI) => {
+  async ({ postId }, thunkAPI) => {
     try {
-      const response = await CommunityApi.delete(`/post/${postId}`);
+      const response = await CommunityApi.delete(`/post/deletepost/${postId}`);
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -98,13 +94,11 @@ export const DetelePost = createAsyncThunk(
 export const SearchByTitle = createAsyncThunk(
   'searchByTitle',
   async (keyword, thunkAPI) => {
-    console.log('keyword', keyword);
 
     try {
       const response = await CommunityApi.get('/post/search', {
         params: { keyword },
       });
-      console.log(response);
 
       return response.data;
     } catch (error) {
@@ -121,18 +115,24 @@ export const FindByTag = createAsyncThunk("findByTag", async (tag, thunkAPI) => 
     return response.data;
   }
   catch (error) {
-    console.log(error);
     return thunkAPI.rejectWithValue(error.response.data);
   }
 })
 export const GetPopularTags = createAsyncThunk("getPopulartag", async (thunkAPI) => {
   try {
     const response = await CommunityApi.get("/post/popular");
-    console.log(response.data.data);
     return response.data;
   }
   catch (error) {
-    console.log(error);
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+})
+export const PopularQustions = createAsyncThunk("getPopularPosts", async (thunkAPI) => {
+  try {
+    const response = await CommunityApi.get("/post/popularpost");
+    return response.data;
+  }
+  catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 })
@@ -167,7 +167,7 @@ const postSlice = createSlice({
     });
     builder.addCase(GetUserPosts.fulfilled, (state, action) => {
       state.status = true;
-      state.userPosts = action.payload;
+      state.userPosts = action.payload.data;
     });
     builder.addCase(GetUserPosts.rejected, (state) => {
       state.isError = true;
@@ -238,6 +238,17 @@ const postSlice = createSlice({
       state.popularTag = action.payload.data;
     });
     builder.addCase(GetPopularTags.rejected, (state) => {
+      state.isError = true;
+      state.status = 'error';
+    });
+    builder.addCase(PopularQustions.pending, (state) => {
+      state.status = 'loading';
+    });
+    builder.addCase(PopularQustions.fulfilled, (state, action) => {
+      state.status = true;
+      state.popularQustions = action.payload.data;
+    });
+    builder.addCase(PopularQustions.rejected, (state) => {
       state.isError = true;
       state.status = 'error';
     });

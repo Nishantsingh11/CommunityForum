@@ -4,24 +4,21 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import Post from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 import { uploadImage } from "../utils/cloudinairy.js";
+import { Like } from "../models/like.model.js";
+import { Comment } from "../models/comment.model.js";
 
 const createPost = asyncHandler(async (req, res) => {
   try {
     const { title, body, tags } = req.body;
-    console.log("body", req.body);
-    console.log("files", req.files);
     const createdBy = req.user._id;
     // saprate the tag with the comma 
     const splittags = tags.split(",").map((tag) => tag.trim());
     const localImage = req.files?.img[0].path;
-    console.log(localImage);
     const img = await uploadImage(localImage);
-    console.log("cludnary url", img);
     if (!title || !body) {
       throw new ApiError(400, "Please fill all the fields");
     }
     const post = await Post.create({ title, body, img, createdBy, tags: splittags });
-    console.log(post);
 
     if (!post) {
       throw new ApiError(400, "Internal error");
@@ -30,7 +27,6 @@ const createPost = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, "Post created successfully", post));
   } catch (error) {
-    console.log(error);
     throw new ApiError(400, error.message);
   }
 });
@@ -50,9 +46,13 @@ const getPosts = asyncHandler(async (req, res) => {
       const user = await User.findById(posts[i].createdBy).select(
         "-password -coverImage -email -createdAt -updatedAt -__v"
       );
+      const likes = await Like.find({ postid: posts[i]._id }).countDocuments();
+      const commnets = await Comment.find({ postid: posts[i]._id }).countDocuments();
       posts[i] = {
         post: posts[i],
-        user
+        user,
+        likes,
+        commnets
       };
     }
 
@@ -91,7 +91,28 @@ const getUserPosts = asyncHandler(async (req, res) => {
     if (posts.length === 0) {
       throw new ApiError(404, "No posts found");
     }
-    res.status(200).json(new ApiResponse(200, posts, "Posts found"));
+
+    // const user = await User.findById(posts.createdBy).select(
+    //   "-password -coverImage -email -createdAt -updatedAt -__v"
+    // );
+    // get the single user and send with all 
+    const user = await User.findById(req.user).select(
+      "-password -coverImage -email -createdAt -updatedAt -__v"
+    );
+
+    // also send the number of Likes and Comments on the post
+    const postData = [];
+    for (let i = 0; i < posts.length; i++) {
+      const likes = await Like.find({ postid: posts[i]._id }).countDocuments();
+
+      const commnets = await Comment.find({ postid: posts[i]._id }).countDocuments();
+      postData.push({
+        post: posts[i],
+        likes,
+        commnets
+      });
+    }
+    res.status(200).json(new ApiResponse(200, { postData, user }, "Posts found"));
   } catch (error) {
     throw new ApiError(400, error.message);
   }
@@ -106,9 +127,7 @@ const updatePost = asyncHandler(async (req, res) => {
   // if the post is not updated then throw an error
   try {
     const { title, body, tags, status } = req.body;
-    console.log("req", req.body);
-    console.log("tags", tags);
-    console.log("status", status);
+
 
 
 
@@ -121,7 +140,6 @@ const updatePost = asyncHandler(async (req, res) => {
     }
 
     const splittags = tags.split(",").map((tag) => tag.trim());
-    console.log("splittags", splittags);
 
     post.title = title;
     post.body = body;
@@ -132,7 +150,6 @@ const updatePost = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, "Post updated successfully", post));
   } catch (error) {
-    console.log(error);
 
     throw new ApiError(400, error.message);
   }
@@ -147,7 +164,6 @@ const deletePost = asyncHandler(async (req, res) => {
   // if the post is not deleted then throw an error
   try {
     const { id } = req.params;
-    console.log(req.params);
     await Post.findByIdAndDelete(id);
     res.status(200).json(new ApiResponse(200, "Post deleted successfully"));
   } catch (error) {
@@ -189,6 +205,20 @@ const getPopularTags = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, popularTags, "Popular tags found"));
 
 });
+// find the popular Qustion using more likes 
+const getPopularPosts = asyncHandler(async (req, res) => {
+  const posts = await Post.find().sort({ likes: -1 }).limit(10);
+
+
+
+
+  if (!posts) {
+    return res.status(400).json(new ApiResponse(400, {}, "No posts found"));
+  }
+  res.status(200).json(new ApiResponse(200, posts, "Popular posts found"));
+}
+)
+
 
 export {
   createPost,
@@ -199,5 +229,6 @@ export {
   deletePost,
   SearchByTitle,
   SearchByTag,
-  getPopularTags
+  getPopularTags,
+  getPopularPosts
 };

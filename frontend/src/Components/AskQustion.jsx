@@ -11,7 +11,6 @@ const AskQustion = () => {
     tags: '',
     img: null
   });
-  console.log(data);
   const dispatch = useDispatch();
   const handleSubmit = async (e) => {
     try {
@@ -28,7 +27,6 @@ const AskQustion = () => {
         progress: undefined,
       });
     } catch (error) {
-      console.log(error);
       toast.error('Error creating post:', {
         position: 'top-center',
         autoClose: 5000,

@@ -14,7 +14,6 @@ const handleLike = asyncHandler(async (req, res) => {
       postid,
       userid: req.user._id
     });
-    // console.log("like from db ", existingLike);
     if (existingLike.length) {
       await Like.updateOne({ postid }, { $pull: { userid: req.user._id } });
       // remove the likeby and video from the like
@@ -38,12 +37,10 @@ const handleLike = asyncHandler(async (req, res) => {
       postid,
       userid: req.user
     });
-    // console.log("new like", newLike);
 
     await newLike.save();
     return res.send(new ApiResponse(200, {}, "Post liked"));
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
@@ -72,7 +69,6 @@ const handleCommentLike = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, newLike, "Like added successfully"));
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
@@ -81,7 +77,6 @@ const handleCommentLike = asyncHandler(async (req, res) => {
 const getCommentLike = asyncHandler(async (req, res) => {
   try {
     const { commentid } = req.params;
-    console.log("commedId", commentid);
     const comment = await Like.find({ commentid: commentid });
     if (!comment) {
       return res
@@ -94,7 +89,6 @@ const getCommentLike = asyncHandler(async (req, res) => {
         new ApiResponse(201, comment, "Liked comments fetched successfully")
       );
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
@@ -118,7 +112,6 @@ const getLikedPosts = asyncHandler(async (req, res) => {
       res.status(200).json(new ApiResponse(200, {}, "No liked posts found"));
     }
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
@@ -129,7 +122,6 @@ const getLikeOnPost = asyncHandler(async (req, res) => {
   // we have to use aggregate to get the count of likes on the post and to get the user who liked the post
   const { postid } = req.params;
   const likes = await Like.find({ postid: postid });
-  // console.log("likes", likes);
 
   if (likes.length) {
     const IsLikedUser = likes[0].userid.some(id => {

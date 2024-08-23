@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import Loader from './loader/loader';
 import { useSelector, useDispatch } from 'react-redux';
-import { GetUserPosts, UpdatePost } from '../store/slice/post.Sclice';
+import { GetUserPosts, UpdatePost, DetelePost } from '../store/slice/post.Sclice';
 import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit } from 'react-icons/fa';
+import { MdDeleteOutline } from 'react-icons/md';
 
 const Your_Qustions = () => {
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -15,18 +16,16 @@ const Your_Qustions = () => {
     tags: modelPost?.tags,
     status: modelPost?.status
   })
-  console.log(updatedPost);
 
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const post = useSelector((state) => state.post.userPosts.data);
-  console.log(post);
+  const post = useSelector((state) => state.post.userPosts.postData);
+  const user = useSelector((state) => state.post.userPosts.user)
   useEffect(() => {
     dispatch(GetUserPosts(id));
   }, [dispatch, id]);
-
   useEffect(() => {
     if (post) {
       setLoading(false);
@@ -47,7 +46,7 @@ const Your_Qustions = () => {
       return `${diffInHours.toFixed(2)} hours ago`;
     } else {
       const days = Math.floor(diffInHours / 24);
-      return `${days}day(s) ago`;
+      return `${days}d ago`;
     }
   };
 
@@ -60,8 +59,13 @@ const Your_Qustions = () => {
     e.preventDefault();
     await dispatch(UpdatePost({ postId: modelPost._id, updatedPost })).unwrap();
     setIsModelOpen(false);
-    dispatch(GetUserPosts(id));
+    dispatch(GetUserPosts());
   }
+  const handleDeleteQustion = async (post) => {
+    await dispatch(DetelePost({ postId: post._id })).unwrap();
+    dispatch(GetUserPosts());
+  }
+
   return (
     <div>
       {loading ? (
@@ -168,11 +172,6 @@ const Your_Qustions = () => {
                     </div>
                   </div>
                 )}
-
-
-
-
-
                 <div className="grid gap-4">
                   {post?.map((post) => (
                     <div
@@ -184,14 +183,14 @@ const Your_Qustions = () => {
                       <span className="relative flex h-10 w-10 overflow-hidden rounded-full shrink-0">
                         <img
                           className="aspect-square h-full w-full"
-                          alt="@shadcn"
-                          src="/placeholder-user.jpg"
+                          alt="Image Of user"
+                          src={user.avatar}
                         />
                       </span>
                       <div className="flex-1 grid gap-2">
                         <div className="flex items-center justify-between">
                           <a className="font-medium text-lg" href="#">
-                            {post.title}
+                            {post.post.title}
                           </a>
                           <div
                             className="inline-flex w-fit items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-xs"
@@ -200,9 +199,13 @@ const Your_Qustions = () => {
                             Unanswered
                           </div>
                         </div>
-                        <FaEdit onClick={() => handleModel(post)} />
+                        <div className='flex justify-end space-x-5 text-xl'>
+
+                          <FaEdit onClick={() => handleModel(post.post)} />
+                          <MdDeleteOutline onClick={() => handleDeleteQustion(post.post)} />
+                        </div>
                         <p className="text-mutedForeground line-clamp-2">
-                          {post.body}
+                          {post.post.body}
                         </p>
                         <div className="flex items-center gap-2 text-xs text-mutedForeground">
                           <div className="flex items-center gap-1">
@@ -221,7 +224,7 @@ const Your_Qustions = () => {
                               <circle cx="12" cy="12" r="10" />
                               <polyline points="12 6 12 12 16 14" />
                             </svg>
-                            <span>{getTimeDifference(post.createdAt)}</span>
+                            <span>{getTimeDifference(post.post.createdAt)}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <svg
@@ -238,25 +241,24 @@ const Your_Qustions = () => {
                             >
                               <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                             </svg>
-                            <span>0 answers</span>
+                            <span>{post.commnets}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="w-4 h-4"
-                            >
-                              <path d="M7 10v12" />
-                              <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
-                            </svg>
-                            <span>3 votes</span>
+                          <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="w-4 h-4"
+                        >
+                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                        </svg>
+                            <span>{post.likes}</span>
                           </div>
                         </div>
                       </div>

@@ -8,7 +8,8 @@ import {
   deletePost,
   SearchByTitle,
   SearchByTag,
-  getPopularTags
+  getPopularTags,
+  getPopularPosts
 } from "../controllers/post.controller.js";
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -39,9 +40,10 @@ router.route("/getpost/:id").get(authMiddleware, getPost);
 router.route("/getuserposts").get(authMiddleware, getUserPosts);
 router.route("/updatepost/:id").put(authMiddleware, updatePost);
 router.route("/deletepost/:id").delete(authMiddleware, deletePost);
-router.route("/search").get(SearchByTitle)
-router.route("/searchtag").get(SearchByTag)
-router.route("/popular").get(getPopularTags)
+router.route("/search").get(authMiddleware,SearchByTitle)
+router.route("/searchtag").get(authMiddleware,SearchByTag)
+router.route("/popular").get(authMiddleware,getPopularTags)
+router.route("/popularpost").get(getPopularPosts)
 
 
 

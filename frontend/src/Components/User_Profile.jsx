@@ -136,14 +136,7 @@ const User_Profile = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-center">
                       <div className="w-32 h-32">
-                        {/* <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-                        </LineChart>
-                      </ResponsiveContainer> */}
+                      
                       </div>
                     </div>
                     <p className="text-mutedForeground">Badges Earned</p>
@@ -151,14 +144,7 @@ const User_Profile = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-center">
                       <div className="w-32 h-32">
-                        {/* <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data2}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="uv" stroke="black" />
-                        </LineChart>
-                      </ResponsiveContainer> */}
+                  
                       </div>
                     </div>
                     <p className="text-mutedForeground">Levels Reached</p>

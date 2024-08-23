@@ -8,7 +8,6 @@ const SearchByTag = () => {
   const FindBytag = useSelector((state) => state.post?.searchByTagPost)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  // dispatch the action to get the popular tags
   useEffect(() => {
     dispatch(GetPopularTags())
   }, [])
@@ -25,6 +24,12 @@ const SearchByTag = () => {
   }, [])
   const handleNavigate = (id) => {
     navigate(`/qustion/${id}`)
+  }
+  const handleTagSearch = (e) => {
+    dispatch(FindByTag(e.target.value))
+  }
+  const handleSeeAll = () => {
+    navigate("/AllTags")
   }
   return (
     <div>
@@ -70,83 +75,19 @@ const SearchByTag = () => {
                 className="flex h-10 border border-input px-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-mutedForeground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-md bg-card pl-10 pr-4 py-3 focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="Search for tags..."
                 type="search"
+                onChange={handleTagSearch}
               />
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Design</h3>
-              <p className="text-mutedForeground text-sm">
-                Explore the latest design trends and techniques.
-              </p>
-            </a>
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Development</h3>
-              <p className="text-mutedForeground text-sm">
-                Learn about the latest web and mobile development tools and
-                frameworks.
-              </p>
-            </a>
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Marketing</h3>
-              <p className="text-mutedForeground text-sm">
-                Discover effective marketing strategies and tactics.
-              </p>
-            </a>
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Productivity</h3>
-              <p className="text-mutedForeground text-sm">
-                Tips and tools to help you work smarter, not harder.
-              </p>
-            </a>
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Lifestyle</h3>
-              <p className="text-mutedForeground text-sm">
-                Explore articles on health, fitness, and personal development.
-              </p>
-            </a>
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Technology</h3>
-              <p className="text-mutedForeground text-sm">
-                Stay up-to-date with the latest tech news and innovations.
-              </p>
-            </a>
-            <a
-              className="bg-card rounded-md p-4 hover:bg-muted/50 transition-colors"
-              href="#"
-            >
-              <h3 className="text-lg font-medium mb-2">Business</h3>
-              <p className="text-mutedForeground text-sm">
-                Insights and strategies for bui
-              </p>
-            </a>
-          </div>
+
           <hr className="mt-5 mb-5" />
-          <div className="flex justify-center items-center text-center ">
-            <h1 className="text-2xl font-bold">Search Result :</h1>
-          </div>
           {
             isFindbyTag ? (
 
               <div className="grid gap-4">
+                <div className="flex justify-center items-center text-center ">
+                  <h1 className="text-2xl font-bold">Search Result :</h1>
+                </div>
                 {FindBytag && FindBytag.map((post) => (
                   <div
                     key={post._id}

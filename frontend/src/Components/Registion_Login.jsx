@@ -21,10 +21,8 @@ const Registion_Login = () => {
     email: '',
     password: '',
   });
-  console.log(data);
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(data);
     dispatch(RegisterUser(data));
     setIsLogin(!isLogin);
   };
@@ -234,7 +232,8 @@ const Registion_Login = () => {
                     id="password"
                     placeholder="Enter your password"
                     required=""
-                    type="password"
+                      type="password"
+                      autoComplete='current-password'
                     onChange={(e) =>
                       setLoginData({
                         ...loginData,

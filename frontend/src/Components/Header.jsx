@@ -4,8 +4,7 @@ import { LuUser } from 'react-icons/lu';
 import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { Logout } from '../store/slice/authSclice';
-import { SearchByTitle } from '../store/slice/post.Sclice';
-
+import { SearchByTitle,  } from '../store/slice/post.Sclice';
 const Header = () => {
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
@@ -29,7 +28,7 @@ const Header = () => {
       setLogin(false);
     }
   }, [cookies, isLogin]);
-
+ 
   const handleSearch = (e) => {
     setQuery(e.target.value);
     dispatch(SearchByTitle(e.target.value));
@@ -50,7 +49,6 @@ const Header = () => {
 
 
   const handleNavigate = (id) => {
-    // console.log(id);
     navigate(`/qustion/${id}`)
   }
 
@@ -135,7 +133,7 @@ const Header = () => {
                       <div
                         key={post._id}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={()=>handleNavigate(post._id)}
+                        onClick={() => handleNavigate(post._id)}
                       >
                         {post.title}
                         {index < SearchPost.length - 1 && (

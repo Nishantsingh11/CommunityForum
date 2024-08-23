@@ -21,7 +21,6 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log(error);
     
     throw new ApiError(
       401,

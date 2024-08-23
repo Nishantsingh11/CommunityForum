@@ -15,10 +15,19 @@ const initialState = {
 export const AddComment = createAsyncThunk(
   'addComment',
   async ({ postId, data }) => {
+
+
     try {
+      const formData = new FormData()
+      formData.append("body", data.body)
+      formData.append("commentimg", data.commentimg)
       const response = await CommunityApi.post(
         `/comment/addcomment/${postId}`,
-        data
+        formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      }
       );
 
       return response.data;
@@ -44,7 +53,6 @@ export const DeleteComment = createAsyncThunk(
   'deleteComment',
   async ({ commentId }, thunkAPI) => {
     try {
-      console.log('commentId', commentId);
       const response = await CommunityApi.delete(
         `/comment/deletecomment/${commentId}`
       );

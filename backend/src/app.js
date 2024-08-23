@@ -5,7 +5,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://comunityforum.netlify.app",
+    origin: "http://localhost:5173", // allow to server to accept request from different origin
     credentials: true, // Allows cookies and other credentials to be sent
   })
 );

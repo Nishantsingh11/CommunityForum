@@ -22,23 +22,21 @@ const Qustion = () => {
   const [loading, setLoading] = useState(true);
   const [commentData, setCommentData] = useState({
     body: '',
+    commentimg: '',
   });
   const { id } = useParams();
 
   const dispatch = useDispatch();
   const post = useSelector((state) => state.post.post?.data);
   const comments = useSelector((state) => state.comment?.comments?.data);
-  // console.log('comments', comments);
   const postLike = useSelector((state) => state.like?.like?.data);
   const CommnetLike = useSelector((state) => state.like.commentLike?.data);
 
-  console.log('comment Like ', CommnetLike);
 
   useEffect(() => {
     const fetchedComments = async () => {
-      
+
       await dispatch(GetCommentForPost({ postId: id })).unwrap()
-      console.log("commnets from qustion", comments);
       for (let i = 0; i < comments?.length; i++) {
         await dispatch(GetCommnetLike(comments?.[i]?._id)).unwrap()
       }
@@ -57,35 +55,6 @@ const Qustion = () => {
   }, [dispatch, id]);
 
 
-  // useEffect(()=>{
-  // const fetachData = async() =>{
-  //   try {
-  //     await Promise.all([
-  //       dispatch(GetPost(id)).unwrap(),
-  //       dispatch(GetPostLike(id)).unwrap(),
-  //     ]);
-  // const fetchedComments = await dispatch(GetCommentForPost({ postId: id })).unwrap();
-  // await fetchCommentLikes(fetchedComments);
-  // setLoading(false);
-
-  //   await dispatch(GetCommnetLike(fetchedComments._id)).unwrap()
-  // } catch (error) {
-  //   console.error("Error fetching post data:", error);
-  //   setLoading(true);
-  // }
-  // }
-  // const fetchCommentLikes = async (comments) => {
-  //   try {
-  //     await Promise.all(
-  //       comments.map(comment =>
-  //         dispatch(GetCommnetLike(comment._id)).unwrap()
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Error fetching comment likes:", error);
-  //   }
-  // };
-  // },[dispatch,id])
 
   useEffect(() => {
     if (post && post && postLike) {
@@ -112,7 +81,6 @@ const Qustion = () => {
         pauseOnHover: true,
         draggable: true,
       });
-      console.log(commentData);
       setCommentData({ body: '' });
       dispatch(GetCommentForPost({ postId: id }));
     } catch (error) {
@@ -140,7 +108,6 @@ const Qustion = () => {
       });
       dispatch(GetCommentForPost({ postId: id }));
     } catch (error) {
-      console.log(error);
       toast.error('Error deleting comment:', {
         position: 'top-center',
         autoClose: 5000,
@@ -242,44 +209,7 @@ const Qustion = () => {
                   <div className="text-sm text-mutedForeground">
                     {postLike?.UserLen}
                   </div>
-                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-4 h-4"
-                    >
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                    <span className="sr-only">Favorite</span>
-                  </button>
-                  <div className="text-sm text-mutedForeground">5</div>
-                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-4 h-4"
-                    >
-                      <path d="M7 10v12" />
-                      <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
-                    </svg>
-                    <span className="sr-only">Upvote</span>
-                  </button>
-                  <div className="text-sm text-mutedForeground">15</div>
-                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                                   <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -325,6 +255,7 @@ const Qustion = () => {
                       <p className="text-mutedForeground" value={comment.body}>
                         {comment.body}
                       </p>
+                      <img src={comment.commentimg || null} alt="Commnet data img " />
                     </div>
                     <div className="flex items-center gap-4 mt-4">
                       <button
@@ -402,6 +333,10 @@ const Qustion = () => {
                   id="image"
                   type="file"
                   name="image"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setCommentData({ ...commentData, commentimg: e.target.files[0] })
+                  }
                 />
               </div>
               <button

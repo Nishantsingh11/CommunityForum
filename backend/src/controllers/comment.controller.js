@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { uploadImage } from "../utils/cloudinairy.js"
 const addComment = asyncHandler(async (req, res) => {
   // get the body of commnet
   // get the post id
@@ -15,21 +16,24 @@ const addComment = asyncHandler(async (req, res) => {
     if (!body) {
       throw new ApiError(400, "Comment body is required");
     }
+
+    const commentImgLocalPath = req.files.commentimg[0].path
+    const commentimg = await uploadImage(commentImgLocalPath);
+
+
     const { postid } = req.params;
 
     const newComment = new Comment({
       body,
       postid,
-      userid: req.user._id
+      userid: req.user._id,
+      commentimg
     });
-    console.log("new comment", newComment);
-
     await newComment.save();
     return res.send(
       new ApiResponse(200, newComment, "Comment added successfully")
     );
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
@@ -59,7 +63,6 @@ const getComments = asyncHandler(async (req, res) => {
       new ApiResponse(200, commentsWithUserData, "Comments found")
     );
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
@@ -78,9 +81,7 @@ const deleteComment = asyncHandler(async (req, res) => {
   try {
     const { commentid } = req.params;
     const { userid } = req.user;
-    console.log("userID", req.user._id);
     const comment = await Comment.findById(commentid);
-    console.log("commment", comment);
     if (!comment) {
       throw new ApiError(404, "Comment not found");
     }
@@ -92,7 +93,6 @@ const deleteComment = asyncHandler(async (req, res) => {
       new ApiResponse(200, comment, "Comment deleted successfully")
     );
   } catch (error) {
-    console.log(error);
     throw new ApiError(500, "Internal server error");
   }
 });
