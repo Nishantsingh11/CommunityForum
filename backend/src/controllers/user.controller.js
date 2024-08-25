@@ -25,7 +25,7 @@ const createUser = asyncHandler(async (req, res) => {
   const { name, email, password, confirmPassword, username } = req.body;
 
   if (!name || !email || !password || !confirmPassword || !username) {
-    throw new ApiError(400, "Please fill all the fields");  
+    throw new ApiError(400, "Please fill all the fields");
   }
   if (password !== confirmPassword) {
     throw new ApiError(400, "Passwords do not match");
@@ -71,7 +71,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!password) {
       throw new ApiError(400, "Please provide password");
     }
-    const user = await User.findOne({ $or: [{ email:email }, { username:username }] });
+    const user = await User.findOne({ $or: [{ email: email }, { username: username }] });
     if (!user) {
       throw new ApiError(400, "User not found");
     }
@@ -87,8 +87,11 @@ const loginUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
     const option = {
-      httpOnly: false,
-      // secure: false
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",  // Allow cross-site cookie sending
+      maxAge: 7 * 24 * 60 * 60 * 1000,  // Optional: cookie expiration time (e.g., 7 days)
+
     };
     res
       .status(200)
