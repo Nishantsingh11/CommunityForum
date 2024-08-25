@@ -57,6 +57,8 @@ export const GetUserPosts = createAsyncThunk(
 
 export const GetPost = createAsyncThunk('getPost', async (postId, thunkAPI) => {
   try {
+    console.log(" i am getting called",postId);
+    
     const response = await CommunityApi.get(`/post/getpost/${postId}`);
     return response.data;
   } catch (err) {

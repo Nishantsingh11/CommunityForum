@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadImage } from "../utils/cloudinairy.js"
+import { Like } from "../models/like.model.js";
 const addComment = asyncHandler(async (req, res) => {
   // get the body of commnet
   // get the post id
@@ -52,9 +53,12 @@ const getComments = asyncHandler(async (req, res) => {
         const user = await User.findById(comment.userid).select(
           "-coverImage -createdAt -email -password -updatedAt"
         );
+
+        const commentLikeLen = await Like.find({ commentid: comment._id }).countDocuments();
         return {
           ...comment._doc, // Spread the comment data (using _doc to get the raw data)
-          user: user || {} // Attach the user data, or an empty object if user not found
+          user: user || {}, // Attach the user data, or an empty object if user not found
+          commentLike: commentLikeLen || 0
         };
       })
     );

@@ -45,6 +45,7 @@ export const GetCommnetLike = createAsyncThunk(
       const response = await CommunityApi.get(`/like/commentlike/${commentId}`);
       return response.data;
     } catch (error) {
+      console.log(error);
       return thunkAPI.rejectWithValue(error.response.data);
     }
   }

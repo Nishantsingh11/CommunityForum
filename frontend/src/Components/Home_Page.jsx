@@ -169,7 +169,7 @@ const Homepage = () => {
               <div className="space-y-4">
                 {
                   popularQustions && popularQustions.slice(0, 4).map((question) => (
-                    <div
+                    <div key={question._id}
                       className="rounded-lg border bg-secondaryColor text-cardForeground shadow-sm"
                       data-v0-t="card"
                     >

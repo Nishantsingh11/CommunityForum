@@ -49,6 +49,7 @@ export const Logout = createAsyncThunk('logout', async (thunkAPI) => {
 });
 export const UserProfile = createAsyncThunk('userProfile', async (thunkAPI) => {
   try {
+    
     const response = await CommunityApi.get('/user/me');
     return response.data;
   } catch (err) {
@@ -97,7 +98,7 @@ const authSlice = createSlice({
     });
     builder.addCase(UserProfile.fulfilled, (state, action) => {
       state.status = true;
-      state.userData = action.payload;
+      state.userData = action.payload.data;
     });
     builder.addCase(UserProfile.rejected, (state) => {
       state.isError = true;

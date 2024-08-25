@@ -1,14 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authSclice from './slice/authSclice';
-import postSclice from './slice/post.Sclice';
-import likeSclice from './slice/like.sclice';
-import commentSclice from './slice/comment.Sclice';
+import {
+  authSlice,
+  commentSlice,
+  likeSlice,
+  postSlice,
+} from './slice';
 const store = configureStore({
   reducer: {
-    auth: authSclice,
-    post: postSclice,
-    like: likeSclice,
-    comment: commentSclice,
+    auth: authSlice,
+    post: postSlice,
+    like: likeSlice,
+    comment: commentSlice,
   },
 });
 export default store;

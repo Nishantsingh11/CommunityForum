@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { LuUser } from 'react-icons/lu';
 import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { Logout } from '../store/slice/authSclice';
-import { SearchByTitle,  } from '../store/slice/post.Sclice';
+import { Logout } from '../../store/slice/auth.Sclice';
+import { SearchByTitle, } from "../../store/slice/post.Sclice"
 const Header = () => {
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
@@ -28,7 +28,7 @@ const Header = () => {
       setLogin(false);
     }
   }, [cookies, isLogin]);
- 
+
   const handleSearch = (e) => {
     setQuery(e.target.value);
     dispatch(SearchByTitle(e.target.value));

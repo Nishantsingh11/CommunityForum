@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { CreatePost } from '../store/slice/post.Sclice';
+import { CreatePost } from '../../store/slice/post.Sclice';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import  showToast from "../Toasts/Toast.Success.js"
 const AskQustion = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({
@@ -17,25 +17,10 @@ const AskQustion = () => {
       e.preventDefault();
       await dispatch(CreatePost(data)).unwrap();
       navigate('/qustions');
-      toast.success('post created successfully', {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+     
     } catch (error) {
-      toast.error('Error creating post:', {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      console.log(error);
+      showToast("error", "Failed to ask question")
     }
   };
   return (

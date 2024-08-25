@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { RegisterUser } from '../store/slice/authSclice';
-import { LoginUser } from '../store/slice/authSclice';
+import { RegisterUser,LoginUser } from '../../store/slice/auth.Sclice';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

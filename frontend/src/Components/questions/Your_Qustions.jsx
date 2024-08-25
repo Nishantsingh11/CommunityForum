@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import Loader from './loader/loader';
+import { Loader } from "../../Components"
 import { useSelector, useDispatch } from 'react-redux';
-import { GetUserPosts, UpdatePost, DetelePost } from '../store/slice/post.Sclice';
+import { GetUserPosts, UpdatePost, DetelePost } from '../../store/slice/post.Sclice';
 import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit } from 'react-icons/fa';
 import { MdDeleteOutline } from 'react-icons/md';
+import { getTimeDifference } from '../common/GetTime'
+import { useGetUserPosts } from '../Hooks/Post.Hook';
 
 const Your_Qustions = () => {
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -21,11 +23,10 @@ const Your_Qustions = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const post = useSelector((state) => state.post.userPosts.postData);
   const user = useSelector((state) => state.post.userPosts.user)
-  useEffect(() => {
-    dispatch(GetUserPosts(id));
-  }, [dispatch, id]);
+  const { getUserPost } = useGetUserPosts()
+
+  const post = getUserPost
   useEffect(() => {
     if (post) {
       setLoading(false);
@@ -35,19 +36,6 @@ const Your_Qustions = () => {
   }, [post]);
   const handleNavigate = (id) => {
     navigate(`/qustion/${id}`);
-  };
-  const getTimeDifference = (timestamp) => {
-    const now = new Date();
-    const pastDate = new Date(timestamp);
-    const diffInMs = now - pastDate;
-    const diffInHours = diffInMs / (1000 * 60 * 60); // Convert milliseconds to hours
-
-    if (diffInHours < 24) {
-      return `${diffInHours.toFixed(2)} hours ago`;
-    } else {
-      const days = Math.floor(diffInHours / 24);
-      return `${days}d ago`;
-    }
   };
 
   const handleModel = (post) => {
@@ -244,20 +232,20 @@ const Your_Qustions = () => {
                             <span>{post.commnets}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                          <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="w-4 h-4"
-                        >
-                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                        </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="w-4 h-4"
+                            >
+                              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
                             <span>{post.likes}</span>
                           </div>
                         </div>

@@ -1,47 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { GetPosts, PopularQustions } from '../store/slice/post.Sclice';
-import Loader from '../Components/loader/loader';
+import { Loader } from '../../Components';
 import { useNavigate } from 'react-router-dom';
-
-
+import { usePopularQustions, usePostDatas } from '../Hooks/Post.Hook';
+import {getTimeDifference} from "../common/GetTime"
 const Qustions = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [showAllQustion, setShowAllQustion] = useState(false);
-  const postFromDb = useSelector((state) => state.post?.posts);
-  const popularQustions = useSelector((state) => state.post?.popularQustions)
-  useEffect(() => {
-    dispatch(PopularQustions())
-  }, [])
+  const { postFromDb } = usePostDatas();
+  const { popularQustions } = usePopularQustions();
   const post = useMemo(() => postFromDb, [postFromDb])
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    if (!postFromDb || postFromDb.length === 0) {
-      dispatch(GetPosts());
-    }
-  }, [dispatch, postFromDb]);
 
   useEffect(() => {
     if (post) {
       setLoading(false);
     } else setLoading(true);
   }, [post]);
+
   const handleNavigate = (id) => {
     navigate(`/qustion/${id}`);
   };
-  const getTimeDifference = (timestamp) => {
-    const now = new Date();
-    const pastDate = new Date(timestamp);
-    const diffInMs = now - pastDate;
-    const diffInHours = diffInMs / (1000 * 60 * 60); // Convert milliseconds to hours
-    if (diffInHours < 24) {
-      return `${diffInHours.toFixed(2)} hours ago`;
-    } else {
-      const days = Math.floor(diffInHours / 24);
-      return `${days}d ago`;
-    }
-  };
+
   const handleShowAll = () => {
     setShowAllQustion(!showAllQustion);
   }
@@ -176,12 +155,10 @@ const Qustions = () => {
                       </a>
                     </div>
                     <div className="grid gap-4">
-
-
                       {
                         popularQustions && popularQustions.slice(0, 4).map((question) => (
 
-                          <div
+                          <div key={question._id}
                             className="rounded-lg border bg-card text-cardForeground shadow-sm p-4 flex items-start gap-4"
                             data-v0-t="card"
                           >
@@ -195,7 +172,7 @@ const Qustions = () => {
                             <div className="flex-1 grid gap-2">
                               <div className="flex items-center justify-between">
                                 <a className="font-medium text-lg" href="#">
-                               {question.title}
+                                  {question.title}
                                 </a>
                                 <div
                                   className="inline-flex w-fit items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondaryForeground hover:bg-secondary/80 text-xs"

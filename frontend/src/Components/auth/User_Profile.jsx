@@ -1,24 +1,17 @@
-import Loader from './loader/loader';
+import { Loader } from "../../Components"
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { UserProfile } from '../store/slice/authSclice';
-import { GetUserPosts } from '../store/slice/post.Sclice';
 import { useNavigate } from 'react-router-dom';
+import { useGetUserData, useGetUserPosts } from "../Hooks/Post.Hook";
 const User_Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   let [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state.auth.userData?.data);
-  const getUserPost = useSelector((state) => state.post?.userPosts?.data);
+  const { user } = useGetUserData()
+  const { getUserPost } = useGetUserPosts()
   const handleAskedQustion = () => {
     navigate(`/your-questions/${user?._id}`);
-  };
-  useEffect(() => {
-    dispatch(GetUserPosts(user?._id));
-  }, [dispatch, user?._id]);
-  useEffect(() => {
-    dispatch(UserProfile());
-  }, [dispatch]);
+  };  
   useEffect(() => {
     if (user) {
       setLoading(false);
@@ -136,7 +129,7 @@ const User_Profile = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-center">
                       <div className="w-32 h-32">
-                      
+
                       </div>
                     </div>
                     <p className="text-mutedForeground">Badges Earned</p>
@@ -144,7 +137,7 @@ const User_Profile = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-center">
                       <div className="w-32 h-32">
-                  
+
                       </div>
                     </div>
                     <p className="text-mutedForeground">Levels Reached</p>

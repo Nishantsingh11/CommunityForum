@@ -1,19 +1,20 @@
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { GetPost } from '../store/slice/post.Sclice';
-import Loader from './loader/loader';
+import { Loader } from './../../Components';
+import {usePostData} from '../Hooks/Post.Hook';
+import useLike from '../Hooks/Like.Hook';
+import useComment from '../Hooks/Comment.Hook';
+import ToastSuccess from '../Toasts/Toast.Success';
 import {
   Like, GetPostLike,
-
   CommentLike,
-  GetCommnetLike,
-} from '../store/slice/like.sclice';
+} from '../../store/slice/like.sclice';
 import {
   GetCommentForPost,
   AddComment,
   DeleteComment,
-} from '../store/slice/comment.Sclice';
+} from '../../store/slice/comment.Sclice';
 import { toast } from 'react-toastify';
 import { MdDeleteOutline } from 'react-icons/md';
 import { BsReplyAllFill } from 'react-icons/bs';
@@ -27,37 +28,20 @@ const Qustion = () => {
   const { id } = useParams();
 
   const dispatch = useDispatch();
-  const post = useSelector((state) => state.post.post?.data);
-  const comments = useSelector((state) => state.comment?.comments?.data);
-  const postLike = useSelector((state) => state.like?.like?.data);
-  const CommnetLike = useSelector((state) => state.like.commentLike?.data);
+  const { post } = usePostData(id)
+  const { postLike } = useLike(id);
 
+  const { comments } = useComment(id);
+  console.log('comments', comments);
+  if (comments) {
 
-  useEffect(() => {
-    const fetchedComments = async () => {
-
-      await dispatch(GetCommentForPost({ postId: id })).unwrap()
-      for (let i = 0; i < comments?.length; i++) {
-        await dispatch(GetCommnetLike(comments?.[i]?._id)).unwrap()
-      }
-
-
+    for (const comment of comments) {
+      console.log(comment.commentLike.length)
     }
-    fetchedComments()
-  }, [dispatch, id]);
+  }
 
   useEffect(() => {
-    dispatch(GetPostLike(id));
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    dispatch(GetPost(id));
-  }, [dispatch, id]);
-
-
-
-  useEffect(() => {
-    if (post && post && postLike) {
+    if (post && postLike) {
       setLoading(false);
     } else {
       setLoading(true);
@@ -68,19 +52,12 @@ const Qustion = () => {
     await dispatch(Like(id)).unwrap();
     dispatch(GetPostLike(id));
   };
-
   const HandleAddComment = async (e) => {
     e.preventDefault();
     try {
       await dispatch(AddComment({ postId: id, data: commentData })).unwrap();
-      toast.success('Comment added successfully', {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      ToastSuccess('success', 'Comment added successfully');
+
       setCommentData({ body: '' });
       dispatch(GetCommentForPost({ postId: id }));
     } catch (error) {
@@ -151,7 +128,7 @@ const Qustion = () => {
       ) : (
         <div className="w-full max-w-4xl mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 font-sans">{post.title}</h1>
+            <h1 className="text-3xl font-bold mb-2 font-sans">{post.post.title}</h1>
             <p className="text-mutedForeground ">
               Asked by {post.user.username} on{' '}
               {post.post.createdAt?.slice(0, 10)}
@@ -209,7 +186,7 @@ const Qustion = () => {
                   <div className="text-sm text-mutedForeground">
                     {postLike?.UserLen}
                   </div>
-                                   <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -278,7 +255,8 @@ const Qustion = () => {
                         </svg>
                         <span className="sr-only">Like</span>
                       </button>
-                      <div className="text-sm text-mutedForeground">{CommnetLike?.userid?.length}</div>
+
+                      <div className="text-sm text-mutedForeground">{comment.commentLike}</div>
 
                       <button
                         className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-secondaryColor hover:text-accent-foreground h-10 w-10"

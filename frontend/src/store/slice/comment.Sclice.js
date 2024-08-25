@@ -38,8 +38,9 @@ export const AddComment = createAsyncThunk(
 );
 export const GetCommentForPost = createAsyncThunk(
   'getComments',
-  async (payload, thunkAPI) => {
-    const { postId } = payload;
+  async (postId, thunkAPI) => {
+
+
 
     try {
       const response = await CommunityApi.get(`/comment/getcomment/${postId}`);
