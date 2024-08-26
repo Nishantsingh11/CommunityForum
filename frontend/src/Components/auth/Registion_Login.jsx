@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { RegisterUser,LoginUser } from '../../store/slice/auth.Sclice';
+import { RegisterUser, LoginUser } from '../../store/slice/auth.Sclice';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-
+import showToast from "../Toasts/Toast.Success.js"
 const Registion_Login = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
@@ -20,11 +19,16 @@ const Registion_Login = () => {
     email: '',
     password: '',
   });
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(RegisterUser(data));
-    setIsLogin(!isLogin);
-  };
+    
+    await dispatch(RegisterUser(data)).unwrap().then((res) => {
+      setIsLogin(!isLogin);
+      showToast("success", "Registration successful")
+    }).catch((er) => {
+      showToast("error", er.message)
+    })
+  }
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -231,8 +235,8 @@ const Registion_Login = () => {
                     id="password"
                     placeholder="Enter your password"
                     required=""
-                      type="password"
-                      autoComplete='current-password'
+                    type="password"
+                    autoComplete='current-password'
                     onChange={(e) =>
                       setLoginData({
                         ...loginData,

@@ -10,7 +10,9 @@ const initialState = {
 export const RegisterUser = createAsyncThunk(
   'register',
   async (userData, thunkAPI) => {
+
     try {
+
       const formData = new FormData()
       formData.append('username', userData.username);
       formData.append('name', userData.name);
@@ -23,8 +25,10 @@ export const RegisterUser = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+
       return response.data;
     } catch (err) {
+
       return thunkAPI.rejectWithValue(err.response.data);
     }
   }
@@ -34,7 +38,9 @@ export const LoginUser = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const response = await CommunityApi.post('/user/login', userData);
+
       return response.data;
+
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
     }
@@ -45,7 +51,6 @@ export const Logout = createAsyncThunk('logout', async (thunkAPI) => {
     const response = await CommunityApi.post('/user/logout');
     return response.data;
   } catch (err) {
-    console.log(err);
 
     return thunkAPI.rejectWithValue(err.response.data);
   }
@@ -66,8 +71,6 @@ export const AuthStatus = createAsyncThunk('auth', async (thunkAPI) => {
     return response.data
   }
   catch (err) {
-    console.log(err);
-
     return thunkAPI.rejectWithValue(err.response.data);
 
   }
@@ -130,7 +133,7 @@ const authSlice = createSlice({
       state.isError = true;
       state.status = 'error';
     });
-    
+
   },
 });
 export default authSlice.reducer;
