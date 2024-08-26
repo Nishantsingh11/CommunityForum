@@ -4,6 +4,7 @@ const initialState = {
   status: false,
   userData: null,
   isError: false,
+  userLogin: false,
 };
 
 export const RegisterUser = createAsyncThunk(
@@ -41,22 +42,36 @@ export const LoginUser = createAsyncThunk(
 );
 export const Logout = createAsyncThunk('logout', async (thunkAPI) => {
   try {
-    const response = await CommunityApi.get('/user/logout');
+    const response = await CommunityApi.post('/user/logout');
     return response.data;
   } catch (err) {
+    console.log(err);
+
     return thunkAPI.rejectWithValue(err.response.data);
   }
 });
 export const UserProfile = createAsyncThunk('userProfile', async (thunkAPI) => {
   try {
-    
+
     const response = await CommunityApi.get('/user/me');
     return response.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data);
   }
 });
+export const AuthStatus = createAsyncThunk('auth', async (thunkAPI) => {
+  try {
+    const response = await CommunityApi.get("/user/authStatus")
 
+    return response.data
+  }
+  catch (err) {
+    console.log(err);
+
+    return thunkAPI.rejectWithValue(err.response.data);
+
+  }
+})
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -104,6 +119,18 @@ const authSlice = createSlice({
       state.isError = true;
       state.status = 'error';
     });
+    builder.addCase(AuthStatus.pending, (state) => {
+      state.status = 'loading';
+    });
+    builder.addCase(AuthStatus.fulfilled, (state) => {
+      state.status = true;
+      state.userLogin = true;
+    });
+    builder.addCase(AuthStatus.rejected, (state) => {
+      state.isError = true;
+      state.status = 'error';
+    });
+    
   },
 });
 export default authSlice.reducer;

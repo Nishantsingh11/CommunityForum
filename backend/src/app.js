@@ -5,6 +5,7 @@ const app = express();
 
 app.use(
   cors({
+    // origin: "http://localhost:5173", // allow to server to accept request from different origin
     origin: "https://foarm1.netlify.app", // allow to server to accept request from different origin
     credentials: true, // Allows cookies and other credentials to be sent
   })

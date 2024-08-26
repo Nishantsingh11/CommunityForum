@@ -5,11 +5,15 @@ import {
   logoutUser,
   refreshAccessToken,
   changeCurrentPassword,
-  getCurrentUser
+  getCurrentUser,
+  authStatus
 } from "../controllers/user.controller.js";
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 const router = Router();
+
+router.route("/authStatus").get(authMiddleware, authStatus)
+
 
 router.route("/register").post(
   upload.fields([

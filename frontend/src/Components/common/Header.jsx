@@ -3,8 +3,10 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { LuUser } from 'react-icons/lu';
 import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { Logout } from '../../store/slice/auth.Sclice';
+import { AuthStatus, Logout } from '../../store/slice/auth.Sclice';
 import { SearchByTitle, } from "../../store/slice/post.Sclice"
+import  showToast  from "../Toasts/Toast.Success"
+
 const Header = () => {
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
@@ -18,16 +20,20 @@ const Header = () => {
     dispatch(Logout());
     cookies.remove('accessToken');
     cookies.remove('refreshToken');
-    setLogin(!isLogin);
+    setLogin(false);
     navigate('/');
   };
   useEffect(() => {
-    if (cookies.get('accessToken')) {
+    dispatch(AuthStatus()).unwrap().then((res) => {
       setLogin(true);
-    } else {
-      setLogin(false);
     }
-  }, [cookies, isLogin]);
+    ).catch((err) => {
+      setLogin
+        (false);
+      showToast("error", "Please Login !!")
+    }
+    );
+  }, []);
 
   const handleSearch = (e) => {
     setQuery(e.target.value);

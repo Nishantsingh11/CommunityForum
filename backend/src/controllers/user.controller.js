@@ -4,6 +4,26 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadImage } from "../utils/cloudinairy.js";
 
+
+import jwt from "jsonwebtoken"
+
+const authStatus = asyncHandler(async (req, res) => {
+  const accessToken = req.cookies.accessToken;
+  if (!accessToken) {
+    return res.status(200).json(new ApiResponse(200, false, "User is not logged in"));
+  }
+  jwt.verify(accessToken, process.env.ACCESSTOKEN, (err, decoded) => {
+    if (err) {
+      return res.status(200).json(new ApiResponse(200, false, "User is not logged in"));
+    }
+    res.status(200).json(new ApiResponse(200, true, "User is logged in"));
+  }
+  );
+
+})
+
+
+
 // function for the genrating access token and refresh token
 const genrateAccessAndRefreshToken = async userId => {
   try {
@@ -214,5 +234,6 @@ export {
   logoutUser,
   refreshAccessToken,
   changeCurrentPassword,
-  getCurrentUser
+  getCurrentUser,
+  authStatus
 };
